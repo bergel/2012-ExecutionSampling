@@ -188,51 +188,67 @@ Department of Computer Science (DCC)\\ University of Chile, Santiago, Chile\\[1 
 \begin{abstract}
 %	What's the problem.
 Code profilers estimate the amount of time spent in each method by regularly sampling the method call stack. 
-One of the main advantage of execution sampling is the relatively low overhead it incurs. However, execution sampling is fairly inaccurate.
+%One of the main advantage of execution sampling is the relatively low overhead it incurs. 
+However, execution sampling is fairly inaccurate.
 %	Why is the problem a problem?
-Under optimal condition, the execution sampling report only half the methods that actually executed, and so, both on Pharo and VisualWorks Smalltalk.
+This inaccuracy may gives a false sense of CPU time distribution and prevents profilers from being used to estimate the code coverage.
+%Under optimal condition, the execution sampling report only half the methods that actually executed, and so, both on Pharo and VisualWorks Smalltalk.
 
 %	What's the surprising idea?
-We first 
-
+Multiplying the execution of the code to be profiled increases the profiler accuracy.
+We shows that the relation between the number of iterations and the precision of the profiler follows a logarithm curve. 
 %	What's the consequence?
-
+We propose a statistical model to determine the right amount of iterations to reach a particle ration of reported methods.
 \end{abstract}
 
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Introduction}\seclabel{introduction}
 
-The research questions addressed in this paper are:
-\begin{itemize}
-%\item[A -] \emph{Can the distribution of the CPU consumption access objects and messages be accurately determined?}
-\item[A-] \emph{}
-\item[B-] \emph{}
-\end{itemize}
+Precisely determining what is happening during the execution of a program is difficult. Modern programming environments provide code execution profilers to report on the execution behavior. Code execution profilers are particularly useful at estimating where the CPU (or the virtual machine) is spending time on. 
 
-Contributions are:
-\begin{itemize}
-\item We identify serious limitations in the way execution sampling-based profiling is realized in Visualworks and Pharo.
-\item We 
-\end{itemize}
+Precisely determining the CPU consumption time share for each method involved in a computation is challenging. Inspecting the execution of a program has an impact on the execution itself. Execution sampling is a technique commonly employed when profiling code execution. It is relatively accurate and it keeps the impact on the executed program relatively low. As a consequence execution sampling is used in the large majority of code execution profilers.
 
+Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. This is a well known problem that software engineer address by executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profiling. 
+
+The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
+
+We answer this question by carefully measuring the amount of reported methods in a profile. By executing multiple times the code to profile, we measure the gain in reported method. We determined that this gain follows a logarithmic curve. By establishing a regression model, we are able to estimate the profiling precision based on a small number of execution samples.
+
+%The research questions addressed in this paper are:
+%\begin{itemize}
+%\item[A-] \emph{Can we measure the impact of repeatedly executing the same piece of code when sampling its execution?}
+%\item[B-] \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
+%\end{itemize}
+
+%Contributions are:
+%\begin{itemize}
+%\item We identify serious limitations in the way execution sampling-based profiling is realized in Visualworks and Pharo.
+%\item We 
+%\end{itemize}
+
+
+We first illustrate the impact on multiple execution on a number of Smalltalk applications (\secref{executionSampling}). 
+Subsequently, we measure this impact and establish a statistical model for it (\secref{measuringTheGain}).
+We then review the related work (\secref{relatedwork}) before concluding (\secref{conclusion}).
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Code Execution Sampling}
+\section{Code Execution Sampling} \seclabel{executionSampling}
 
 %=====
 \subsection{Profiling example}
 
 
-Consider the expression \ct{XMLDOMParser parse: xmlString}. Evaluating this expression returns an abstract syntax tree describing the provided xml content. Evaluating this expression with an arbitrary XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. 
+Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided xml content. Evaluating this expression with an arbitrary XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. 
 
 %Time millisecondsToRun: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ].
 
-Precisely determining the CPU time consumption of each of the method directly and indirectly involved is difficult. Most programming environment offers facilities to approximate this. We profiled the xml parsing using MessageTally, the standard profiler in Pharo, as follows:
+We profiled the xml parsing using MessageTally, the standard profiler in Pharo, as follows:
 
 \begin{lstlisting}
 MessageTally spyOn: [ XMLDOMParser parse: xmlString ]
 \end{lstlisting}
 
-The total execution reported by MessageTally is 168 ms. We therefore see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. Lengthening the execution time by 7\% for a time profile is a compromise acceptable in most of the situations in which Smalltalk is used (\ie non-realtime operation, with a relatively thin interaction with the operating system).
+The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. %Lengthening the execution time by 7\% for a time profile is a compromise acceptable in most of the situations in which Smalltalk is used (\ie non-realtime operation, with a relatively thin interaction with the operating system).
 
 MessageTally reports for the absolute and relative time spent in each method. Consider \ct{XMLTokenizer>>nextTag}, MessageTally reveals it takes 15\% of the total execution:
 
@@ -329,7 +345,7 @@ The call to \ct{nextAttributeInto:namespaces:} is now revealed. By repeatedly ex
 We have arbitrarily chosen a loop of 10 iterations. For some applications, the impact of using 10 iterations is stronger than for others. For example, sampling 10 executions of the unit tests of Regex reports 66\% of the used methods, whereas it was only 25\% with a single execution. The following section discuss the impact of multiple executions.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Improving profiling}
+\section{Measuring the gain} \seclabel{measuringTheGain}
  
 %=====
 \subsection{Regression line}
