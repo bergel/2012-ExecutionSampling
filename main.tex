@@ -200,7 +200,7 @@ This inaccuracy may gives a false sense of CPU time distribution and prevents pr
 Multiplying the execution of the code to be profiled increases the profiler accuracy.
 We shows that the relation between the number of iterations and the precision of the profiler follows a logarithm curve. 
 %	What's the consequence?
-We propose a statistical model to determine the right amount of iterations to reach a particle ration of reported methods.
+We propose a statistical model to determine the right amount of iterations to reach a particle ration of reported methods \vp{, stablishing a metric for the quality of the profiler and helping to enhance it (I think, in the end, this is also a goal)}.
 \end{abstract}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -212,7 +212,7 @@ Precisely determining the CPU consumption time share for each method involved in
 
 Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. This is a well known problem that software engineer address by executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profiling. 
 
-The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
+The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?} \vp{Also quality? or accuracy includes this? What I mean is that some times we have a accurate time, but it's incomplete}
 
 We answer this question by carefully measuring the amount of reported methods in a profile. By executing multiple times the code to profile, we measure the gain in reported method. We determined that this gain follows a logarithmic curve. By establishing a regression model, we are able to estimate the profiling precision based on a small number of execution samples.
 
@@ -250,7 +250,7 @@ We profiled the xml parsing using MessageTally, the standard profiler in Pharo, 
 MessageTally spyOn: [ XMLDOMParser parse: xmlString ]
 \end{lstlisting}
 
-The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. %Lengthening the execution time by 7\% for a time profile is a compromise acceptable in most of the situations in which Smalltalk is used (\ie non-realtime operation, with a relatively thin interaction with the operating system).
+The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. \vp{Sorry, but I do not understand this. I mean, this is a more accurate time? Or is an impact that as a concecuence of MessageTally?}%Lengthening the execution time by 7\% for a time profile is a compromise acceptable in most of the situations in which Smalltalk is used (\ie non-realtime operation, with a relatively thin interaction with the operating system).
 
 MessageTally reports for the absolute and relative time spent in each method. Consider \ct{XMLTokenizer>>nextTag}, MessageTally reveals it takes 15\% of the total execution:
 
@@ -288,9 +288,9 @@ About 64 different methods are part of the profile (average from 20 runs). A car
 
 To verify whether this effect is particular to our particular expression or not, we run a similar experiment on 7 other applications.
 We took 7 applications popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the method (using Compteur~\cite{Berg11d}).
-By instrumenting the method, we get an accurate amount of methods involved in the execution. The average for our 8 applications (including the xml parsing) is 0.35. 
+By instrumenting the method, we get an accurate amount of methods involved in the execution. The average \vp{ratio between reported methods and executed methods} for our 8 applications (including the xml parsing) is 0.35. 
 
-Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms). Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). 
+Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms). Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). \vp{Maybe it's more the repetition of the execution than the longer execution. Because we do not extend the execution time, we executed it more times. Maybe Shout has a bigger test suite, it executed more times some methods. Not sure if it's a huge difference, but I think it's more related to the sampling idea. Maybe specify is the profiling time than the methods execution time?}
 
 The fact that some methods are missed by MessageTally is a direct consequence to execution sampling, the strategy used by most of the code execution profilers.
 
@@ -376,6 +376,7 @@ The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially in
 %				closeAfter: false) allMethods select: [:m | 'XML*' match: m methodClass theNonMetaClass category]) size ].
 
 \fig{h}{0.5}{IterationEvolution}{Evolution of the ratio against multiple execution.}
+\vp{Is it possible to add what each axis means? }
 
 \figref{IterationEvolution} shows our measurements. Horizontally is the number of times we executed the xml parsing. The number of iterations goes from 1 to 241, by an increment of 10. Vertically is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{iteration, ratio)}.
 
