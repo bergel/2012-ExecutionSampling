@@ -439,6 +439,21 @@ If we wish to obtain a ratio of 0.8 of our profile, then we need $e^{\frac{0.8 -
 %=====
 %\subsection{Analysis}
 
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{VisualWorks and Pharo}\seclabel{comparison}
+
+The measurement given above have been realized in Pharo Smalltalk with a non-jitted virtual machine. To verify whether the model we have previously described is particular to Pharo or not, we take VisualWorks Smalltalk\footnote{\url{http://www.cincomsmalltalk.com}}, a popular Smalltalk dialect, and run a similar set of experiences.
+
+The executing environment and profiler of VisualWork (VW) differ from the one of Pharo on two essential points:
+
+\begin{itemize}
+\item The virtual machine of VW is significantly faster than the non-jitted one of Pharo. 
+\item In VW, the sampling period is randomly selected in a range $[1 , 32]$ milliseconds. Using a random sampling period leads to an increase of precision~\cite{Mytk10a}. In Pharo the sampling period is fixed.
+\end{itemize}
+
+\fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
+
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkStream. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
 
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
