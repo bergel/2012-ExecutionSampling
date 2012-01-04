@@ -486,13 +486,13 @@ Whaley present a sampling-based profiler for Java Virtual Machines. It is able t
 
 %It is not only efficient enough to be used continuously in a production environment (2-4\% slowdown for most applications) but is also surprisingly accurate in the data that it collects (typically >= 90\% accurate).
 
-Fischmeister and Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenraios, and heuristics to extend the sampling period to reduce the overhead.
+Fischmeister and Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
 
 
 %strategy using markeds showed how to increase the sampling period by using multiple markers. However, this method had limitation in that overusing markers did not pay off as much as we expected in the long run.
 %A marker can be a system element such as the program counter, very useful, because a vertex in the control-flow graph is a basic block in the source code. Besides, a marker can also be a newly introduced variable solely used for the purpose of monitoring the software.
 
-Binder present his sampling-based profiling framework for Java ~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on bytecode instruction counting and it offers a good tradeoff between high accuracy of profiles and reasonable overhead.
+Binder present his sampling-based profiling framework for Java ~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on byte-code instruction counting and it offers a good trade-off between high accuracy of profiles and reasonable overhead.
 
 
 %The key problem in sampling-based execution monitoring is to increase the sampling period. Notorious cases, such as programs with short conditional branches, will result in a low sampling period, if the resolution needs to be given at the granularity of basic blocks. ~\cite{Thomas:2011:LOS:1967677.1967692}
