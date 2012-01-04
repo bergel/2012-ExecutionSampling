@@ -452,13 +452,13 @@ The executing environment and profiler of VisualWork (VW) differ from the one of
 
 \fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
 
-\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkStream. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and \ch{OSkStream}{OSkSubStream}. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
 
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
 
-Extracting accurate profiles from a software execution is challenging. A number of works to increase the accuracy of profilers without losing any information about the execution and without increasing a substantial execution overhead.
+Extracting accurate profiles from a software execution is challenging. \vp{There is?}A number of works to increase the accuracy of profilers without losing any information about the execution and without increasing a substantial execution overhead. \vp{I there is something missing for this sentense to have meaning}
 
 %This section discusses how the sampling based and instrumentation based profilers tried to increase the accuracy and minimize the execution overhead.
 
@@ -476,17 +476,23 @@ Several techniques have been proposed to increase the accuracy and reduce the ov
 
 Mytkowicz, Diwan, Hauswirth, Sweeney evaluate a number of profilers and shows that these profilers are not correct to identify the hot methods, candidates to optimize. And propose a profiler which  propose collects samples randomly, does not suffer from the above problems. 
 
+\vp{Mytkowicz, Diwan, Hauswirth, Sweeney evaluate 4 profilers for Java, exposing that they do not match in their evaluation to identify the hot methods, candidates to optimize. They then propose a more accurate profiler that collects execution information using random sampling and does not suffer from the above problems.}
+
+\vp{Review this please!} Our approach, however, is different as we do not focus to find the hot methods but for the profiler to identify more methods in the sampling.
+We can see that even if we do not use random sampling, by increasing the number of iterations on the profiler, we still can obtain a larger ratio between between reported methods and executed methods.
+
+
 %----->Collects samples randomly is in the case of average ratio of reported methods ...
 
 
 Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and is able to distinguish between frequently-executed and long running methods.  And the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}. 
 
-
+\vp{Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}. }
 
 
 %It is not only efficient enough to be used continuously in a production environment (2-4\% slowdown for most applications) but is also surprisingly accurate in the data that it collects (typically >= 90\% accurate).
 
-Fischmeister and Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenraios, and heuristics to extend the sampling period to reduce the overhead.
+Fischmeister and Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
 
 
 %strategy using markeds showed how to increase the sampling period by using multiple markers. However, this method had limitation in that overusing markers did not pay off as much as we expected in the long run.
@@ -503,7 +509,9 @@ Binder present his sampling-based profiling framework for Java ~\cite{Binder:200
 
 %Instrumentation-based profilers insert instrumentation code into the target program to collect runtime information. \chg{It}{The major disadvantage of instrumenting the profiled code is that it} introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) 
 
-Arnold and Ryder present a framework to perform instrumentation sampling, their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented(original) code. This reduce de overhead, but first need  do an expensive  instrumentation.
+Arnold and Ryder \vp{~\cite{Arno01a}} present a framework to perform instrumentation sampling, their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented (original) code. This reduce \ch{de}{the} overhead, but first need  do an expensive  instrumentation.
+
+\vp{Arnold and Ryder~\cite{Arno01a}. present a framework to perform instrumentation sampling. Their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented (original) code. This reduce the overhead but needs to do an expensive instrumentation first.}
 
 %a code duplication, using a compiler-inserted counter-based sampling to switch between instrumented and non-instrumented code in a controlled, fine-grained manner ~\cite{Arno01a}.
 
@@ -512,6 +520,8 @@ Arnold and Ryder present a framework to perform instrumentation sampling, their 
 %In our case we run many times an execution scenario in order to increases the profiler accuracy. But have a big impact on the overall execution, this approach is not useful to real time systems.
 
 However, we propose in order to improve profiler accuracy in our case the execution scenario is run many times, but this has a big impact on the overall execution overhead. Then this approach is not useful for real time systems for example.
+
+\vp{In order to improve profiler accuracy, we propose to execute the scenario a larger number of times, allowing the profiler to catch more methods. However this has a big impact on the profiler overall execution overhead. For this, our approach is not useful for real time systems, for example.}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion \& Future Work}\seclabel{conclusion}
