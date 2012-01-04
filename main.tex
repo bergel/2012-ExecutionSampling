@@ -200,7 +200,7 @@ This inaccuracy may gives a false sense of CPU time distribution and prevents pr
 Multiplying the execution of the code to be profiled increases the profiler accuracy.
 We shows that the relation between the number of iterations and the precision of the profiler follows a logarithm curve. 
 %	What's the consequence?
-We propose a statistical model to determine the right amount of iterations to reach a particle ration of reported methods.
+We propose a statistical model to determine the right amount of iterations to reach a particular ration of reported methods. We use this model to estimate and increase the profiling accuracy.
 \end{abstract}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -212,7 +212,7 @@ Precisely determining the CPU consumption time share for each method involved in
 
 Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. This is a well known problem that software engineer address by executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profiling. 
 
-The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
+The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?} \vp{Also quality? or accuracy includes this? What I mean is that some times we have a accurate time, but it's incomplete}\ab{I see your point, but "quality" is very vague. I refer to it with "accuracy of the execution sampling"}
 
 We answer this question by carefully measuring the amount of reported methods in a profile. By executing multiple times the code to profile, we measure the gain in reported method. We determined that this gain follows a logarithmic curve. By establishing a regression model, we are able to estimate the profiling precision based on a small number of execution samples.
 
@@ -250,7 +250,8 @@ We profiled the xml parsing using MessageTally, the standard profiler in Pharo, 
 MessageTally spyOn: [ XMLDOMParser parse: xmlString ]
 \end{lstlisting}
 
-The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. %Lengthening the execution time by 7\% for a time profile is a compromise acceptable in most of the situations in which Smalltalk is used (\ie non-realtime operation, with a relatively thin interaction with the operating system).
+Profiling an application increases the execution time. 
+The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. \vp{Sorry, but I do not understand this. I mean, this is a more accurate time? Or is an impact that as a concecuence of MessageTally?} Lengthening the execution time by 7\% for a time profile is a compromise acceptable in out situation (\ie non-realtime operation, with a relatively thin interaction with the operating system). \ab{Is this better now?}
 
 MessageTally reports for the absolute and relative time spent in each method. Consider \ct{XMLTokenizer>>nextTag}, MessageTally reveals it takes 15\% of the total execution:
 
@@ -288,16 +289,17 @@ About 64 different methods are part of the profile (average from 20 runs). A car
 
 To verify whether this effect is particular to our particular expression or not, we run a similar experiment on 7 other applications.
 We took 7 applications popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the method (using Compteur~\cite{Berg11d}).
-By instrumenting the method, we get an accurate amount of methods involved in the execution. The average for our 8 applications (including the xml parsing) is 0.35. 
+By instrumenting the method, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the xml parsing) is 0.35. 
 
-Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms). Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). 
+Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms), meaning that less methods will be caught by the profiler (we recall by the sampling is done every milliseconds). 
+Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). This implies that more methods will be sampled by the profiler. \vp{Maybe it's more the repetition of the execution than the longer execution. Because we do not extend the execution time, we executed it more times. Maybe Shout has a bigger test suite, it executed more times some methods. Not sure if it's a huge difference, but I think it's more related to the sampling idea. Maybe specify is the profiling time than the methods execution time?} \ab{I see your point. I extended the text a bit.}
 
 The fact that some methods are missed by MessageTally is a direct consequence to execution sampling, the strategy used by most of the code execution profilers.
 
 
 %=====
 \subsection{Execution sampling}
-Execution sampling approximates the time spent in an application's methods by periodically stopping a program and recording the collection of methods being executed~\cite{Berg11d}. In VisualWorks and Pharo, the code to profile is executed in a new thread and the profiler runs in a thread at a higher priority. 
+Execution sampling approximates the time spent in an application's methods by periodically stopping a program and recording the collection of methods being executed~\cite{Whal00a}. In VisualWorks and Pharo, the code to profile is executed in a new thread and the profiler runs in a thread at a higher priority~\cite{Berg11d}. 
 When the profiling thread is activated, it inspects the runtime method call stack (accessible via the \ct{thisContext} pseudo variable) of the observed thread. Per default, this inspection happens every milliseconds\footnote{In Java systems, the profiling time sampling is usually 10 milliseconds~\cite{Mytk10a}.}. 
 
 Execution sampling has many advantages. Firstly, it has a low impact on the overall execution. In Pharo, a code is between 5\% and 12\% longer to execute when being profiled. This is reasonable in the large majority of the case developed in Pharo (\ie non-realtime application with little dependencies on the operating system). 
@@ -376,8 +378,9 @@ The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially in
 %				closeAfter: false) allMethods select: [:m | 'XML*' match: m methodClass theNonMetaClass category]) size ].
 
 \fig{h}{0.5}{IterationEvolution}{Evolution of the ratio against multiple execution.}
+\vp{Is it possible to add what each axis means? }\ab{It should be better now}
 
-\figref{IterationEvolution} shows our measurements. Horizontally is the number of times we executed the xml parsing. The number of iterations goes from 1 to 241, by an increment of 10. Vertically is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{iteration, ratio)}.
+\figref{IterationEvolution} shows our measurements. Horizontally is the number of iterations for the xml parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. Vertically is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{iteration, ratio)}.
 
 The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our xml parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data.
 
@@ -436,18 +439,67 @@ If we wish to obtain a ratio of 0.8 of our profile, then we need $e^{\frac{0.8 -
 %=====
 %\subsection{Analysis}
 
+%: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+\section{VisualWorks and Pharo}\seclabel{comparison}
+
+The measurement given above have been realized in Pharo Smalltalk with a non-jitted virtual machine. To verify whether the model we have previously described is particular to Pharo or not, we take VisualWorks Smalltalk\footnote{\url{http://www.cincomsmalltalk.com}}, a popular Smalltalk dialect, and run a similar set of experiences.
+
+The executing environment and profiler of VisualWork (VW) differ from the one of Pharo on two essential points:
+
+\begin{itemize}
+\item The virtual machine of VW is significantly faster than the non-jitted one of Pharo. 
+\item In VW, the sampling period is randomly selected in a range $[1 , 32]$ milliseconds. Using a random sampling period leads to an increase of precision~\cite{Mytk10a}. In Pharo the sampling period is fixed.
+\end{itemize}
+
+\fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
+
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkStream. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
 
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
 
+Profiler accuracy remains a challenge. Many work were made to increase the accuracy without losing any information about the execution and without increasing a substantial execution overhead.
+
+%This section discusses how the sampling based and instrumentation based profilers tried to increase the accuracy and minimize the execution overhead.
+
+\paragraph{Sampling-based profiling}
+
+
+There are several works about sampling-based profiling in order to increase the accuracy: (i) using variable sampling period time~\cite{Myth10a}, (ii)counting byte-code instead of waiting for an elapsed time ~\cite{Bind06a}, (iii)increasing the sampling period by using multiple markers~\cite{Fischmeister:2010:SPE:1755888.1755908}, (iv) identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods~\cite{Whaley:2000:PSP:337449.337483}.
+
 %Variable sampling period time~\cite{Mytk10a}
 
+%John Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and is able to distinguish between frequently-executed and long running methods.  And the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}.  It is not only efficient enough to be used continuously in a production environment (2-4\% slowdown for most applications) but is also surprisingly accurate in the data that it collects (typically >= 90\% accurate).
+
+%Sebastian Fischmeister and Yanmeng Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} showed how to increase the sampling period by using multiple markers. However, this method had limitation in that overusing markers did not pay off as much as we expected in the long run.
+
+%A marker can be a system element such as the program counter, very useful, because a vertex in the control-flow graph is a basic block in the source code. Besides, a marker can also be a newly introduced variable solely used for the purpose of monitoring the software.
+
+%Binder present his sampling-based profiling framework for Java ~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on bytecode instruction counting and it offers a good tradeoff between high accuracy of profiles and reasonable overhead.
+
+%The key problem in sampling-based execution monitoring is to increase the sampling period. Notorious cases, such as programs with short conditional branches, will result in a low sampling period, if the resolution needs to be given at the granularity of basic blocks. ~\cite{Thomas:2011:LOS:1967677.1967692}
+%Binder discovered that sampling the method call stack after a particular amount of executed bytecodes makes profile significantly more accurate.
+
+\paragraph{Instrumentation-based profiling}
+
+Instrumentation-based profilers are usually used to collect runtime information. They insert instrumentation code into the target program to collect runtime information. It introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) performing code duplication and uses compiler-inserted counter-based sampling to switch between instrumented and non-instrumented code in a controlled, fine-grained manner ~\cite{Arno01a}.
+
+\jp{I am not sure about Instrumentation-based profiling, because we are talking about the hidden face of sampling-based profilers...}
+
+%In our case we run many times an execution scenario in order to increases the profiler accuracy. But have a big impact on the overall execution, this approach is not useful to real time systems.
+
+However, we propose in order to improve profiler accuracy in our case the execution scenario is run many times, but this has a big impact on the overall execution overhead. Then this approach is not useful for real time systems for example.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{Conclusion}\seclabel{conclusion}
+\section{Conclusion \& Future Work}\seclabel{conclusion}
 
-\paragraph{Acknowledments} We thanks Romain Robbes for the discussion we had on the statistical part.
+The difficulty to properly monitor an application execution imposes a severe compromise between what information can be extracted and the cost to obtain it. In this paper we have motivated and measured a simple way to increase the accuracy of profiles based on execution sampling.
+
+As future work, we plan to integrate our model into Kai~\cite{Berg11f}, a fully fledged code execution profiler.
+
+
+\paragraph{Acknowledgments} We thanks Johan Fabry and Romain Robbes for the discussion we had on the statistical part.
 
 % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 
