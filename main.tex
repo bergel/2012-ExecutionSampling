@@ -459,14 +459,16 @@ The executing environment and profiler of VisualWork (VW) differ from the one of
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
 
-Profiler accuracy remains a challenge. Many work were made to increase the accuracy without losing any information about the execution and without increasing a substantial execution overhead.
+\chg{Profiler accuracy remains a challenge}{Extracting accurate profiles from a software execution is challenging}. \chg{Many}{A number of} \ab{in this context, ``many'' is too informal} work\ins{s} \chg{were made}{have been proposed} to increase the accuracy \ins{of profilers} without losing any information about the execution and without increasing a substantial execution overhead.
 
 %This section discusses how the sampling based and instrumentation based profilers tried to increase the accuracy and minimize the execution overhead.
 
+%=====
 \paragraph{Sampling-based profiling}
 
+\chg{There are several works about sampling-based profiling in order to increase the accuracy:}{Several techniques have been proposed to increase the accuracy of execution sampling} (i) using variable sampling period time~\cite{Myth10a}, (ii)counting byte-code instead of waiting for an elapsed time ~\cite{Bind06a}, (iii)increasing the sampling period by using multiple markers~\cite{Fischmeister:2010:SPE:1755888.1755908}, (iv) identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods~\cite{Whaley:2000:PSP:337449.337483}.
 
-There are several works about sampling-based profiling in order to increase the accuracy: (i) using variable sampling period time~\cite{Myth10a}, (ii)counting byte-code instead of waiting for an elapsed time ~\cite{Bind06a}, (iii)increasing the sampling period by using multiple markers~\cite{Fischmeister:2010:SPE:1755888.1755908}, (iv) identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods~\cite{Whaley:2000:PSP:337449.337483}.
+\ab{Write a paragraph for each of these techniques. Each paragraph should summarize what their idea is, and then compare it with what we have done, or even better, say whether their technique is applicable in our case}
 
 %Variable sampling period time~\cite{Mytk10a}
 
@@ -481,9 +483,10 @@ There are several works about sampling-based profiling in order to increase the 
 %The key problem in sampling-based execution monitoring is to increase the sampling period. Notorious cases, such as programs with short conditional branches, will result in a low sampling period, if the resolution needs to be given at the granularity of basic blocks. ~\cite{Thomas:2011:LOS:1967677.1967692}
 %Binder discovered that sampling the method call stack after a particular amount of executed bytecodes makes profile significantly more accurate.
 
+%=====
 \paragraph{Instrumentation-based profiling}
 
-Instrumentation-based profilers are usually used to collect runtime information. They insert instrumentation code into the target program to collect runtime information. It introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) performing code duplication and uses compiler-inserted counter-based sampling to switch between instrumented and non-instrumented code in a controlled, fine-grained manner ~\cite{Arno01a}.
+Instrumentation-based profilers are usually used to collect runtime information\ab{this is obvious}. \chg{They}{Instrumentation-based profilers} insert instrumentation code into the target program to collect runtime information. \chg{It}{The major disadvantage of instrumenting the profiled code is that it} introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) performing code duplication and uses compiler-inserted counter-based sampling to switch between instrumented and non-instrumented code in a controlled, fine-grained manner ~\cite{Arno01a}.
 
 \jp{I am not sure about Instrumentation-based profiling, because we are talking about the hidden face of sampling-based profilers...}
 
