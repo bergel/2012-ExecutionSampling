@@ -469,14 +469,15 @@ These four experiences confirm our previous finding: the ratio between profiled 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
 
-Extracting accurate profiles from a software execution is challenging. \vp{There is?}A number of works to increase the accuracy of profilers without losing any information about the execution and without increasing a substantial execution overhead. \vp{I there is something missing for this sentense to have meaning}
+Extracting accurate profiles from a software execution is challenging. Several techniques have been proposed to increase the accuracy and reduce the overhead of execution sampling.
+
+%\vp{There is?}A number of works to increase the accuracy of profilers without losing any information about the execution and without increasing a substantial execution overhead. \vp{I there is something missing for this sentense to have meaning}
 
 %This section discusses how the sampling based and instrumentation based profilers tried to increase the accuracy and minimize the execution overhead.
 
 %=====
 %\paragraph{Sampling-based profiling}
 
-Several techniques have been proposed to increase the accuracy and reduce the overhead of execution sampling.
 
 %(i) using variable sampling period time~\cite{Myth10a}, (ii)counting byte-code instead of waiting for an elapsed time ~\cite{Bind06a}, (iii)increasing the sampling period by using multiple markers~\cite{Fischmeister:2010:SPE:1755888.1755908}, (iv) identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods~\cite{Whaley:2000:PSP:337449.337483}.
 
@@ -486,9 +487,9 @@ Several techniques have been proposed to increase the accuracy and reduce the ov
 
 %Variable sampling period time~\cite{Mytk10a}
 
-Mytkowicz\chg{, Diwan, Hauswirth, Sweeney}{\etal} evaluate 4 \del{of} profilers for Java\chg{, exposing}{. They found} that they do not match in their evaluation to identify the hot methods, candidates to optimize. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems~\cite{Mytk10a}. 
+Mytkowicz \etal evaluate 4 profilers for Java. They found that they do not match in their evaluation to identify the hot methods, candidates to optimize. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems~\cite{Mytk10a}. 
 
-Fischmeister and Ba~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
+Fischmeister and Ba ~\cite{Fisc10a} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
 
 Our approach, however, we can see that even if we use random sampling or a determinated sampling period, the ratio between reported methods and executed methods is inaccurate.
 
@@ -497,14 +498,14 @@ Our approach, however, we can see that even if we use random sampling or a deter
 %strategy using markeds showed how to increase the sampling period by using multiple markers. However, this method had limitation in that overusing markers did not pay off as much as we expected in the long run.
 %A marker can be a system element such as the program counter, very useful, because a vertex in the control-flow graph is a basic block in the source code. Besides, a marker can also be a newly introduced variable solely used for the purpose of monitoring the software.
 
-Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate~\cite{Whaley:2000:PSP:337449.337483}. 
+Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate~\cite{Whal00a}. 
 
 %\vp{Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}. }
 
 
 %It is not only efficient enough to be used continuously in a production environment (2-4\% slowdown for most applications) but is also surprisingly accurate in the data that it collects (typically >= 90\% accurate).
 
-Binder present his sampling-based profiling framework for Java~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on byte-code instruction counting and it offers a good trade-off between high accuracy of profiles and reasonable overhead. The features of Binder profiler can improve our overall impact. In this sense the ratio between profiled methods and executed methods could be more deterministic.
+Binder present his sampling-based profiling framework for Java~\cite{Bind06a} to implement custom profiling agents in pure Java. It is a sampling based on byte-code instruction counting and it offers a good trade-off between high accuracy of profiles and reasonable overhead. The features of Binder profiler can improve our overall impact. In this sense the ratio between profiled methods and executed methods could be more deterministic.
 
 
 %The key problem in sampling-based execution monitoring is to increase the sampling period. Notorious cases, such as programs with short conditional branches, will result in a low sampling period, if the resolution needs to be given at the granularity of basic blocks. ~\cite{Thomas:2011:LOS:1967677.1967692}
@@ -527,7 +528,7 @@ Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation s
 
 %However, we propose in order to improve profiler accuracy in our case the execution scenario is run many times, but this has a big impact on the overall execution overhead. Then this approach is not useful for real time systems for example.
 
-In order to improve profiler accuracy, we propose to execute the scenario a larger number of times, allowing the profiler to catch more methods. However this has a big impact on the profiler overall execution overhead. For this, our approach \chg{is not useful for}{does not apply to} real time systems, for example.
+In order to improve profiler accuracy, we propose to execute the scenario a larger number of times, allowing the profiler to catch more methods. However this has a big impact on the profiler overall execution overhead. For this, our approach does not apply to real time systems, for example.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion \& Future Work}\seclabel{conclusion}
@@ -546,7 +547,7 @@ As future work, we plan to integrate our model into Kai~\cite{Berg11f}, a fully 
 
 %{\small
 \bibliographystyle{plain}
-\bibliography{scg}
+\bibliography{scg,profiling}
 %\bibliography{hapao}
 %}
 \end{document}
