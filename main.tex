@@ -251,7 +251,7 @@ MessageTally spyOn: [ XMLDOMParser parse: xmlString ]
 \end{lstlisting}
 
 Profiling an application increases the execution time. 
-The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. Lengthening the execution time by 7\% for a time profile is a compromise acceptable in out \vp{our?} situation (\ie non-realtime operation, with a relatively thin interaction with the operating system).
+The total execution reported by MessageTally is 168 ms. We see an increase of $(168 - 156) / 156 = 7\%$ of the execution time. Lengthening the execution time by 7\% for a time profile is a compromise acceptable in our situation (\ie non-realtime operation, with a relatively thin interaction with the operating system).
 
 MessageTally reports for the absolute and relative time spent in each method. Consider \ct{XMLTokenizer>>nextTag}, MessageTally reveals it takes 15\% of the total execution:
 
@@ -381,7 +381,7 @@ The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially in
 
 \figref{IterationEvolution} shows our measurements. Horizontally is the number of iterations for the xml parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. Vertically is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{iteration, ratio)}.
 
-The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our xml parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data.
+The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our xml parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data. We will gives an accurate definition of $R^2$ later on (\secref{rSquared}).
 
 \fig{h}{0.5}{IterationEvolutionForApplications}{Evolution of the ratio.}
 We repeat the same analysis on our applications (\figref{IterationEvolutionForApplications}). All the regression lines are logarithmic curves, with a $R^2$ over 0.89. 
@@ -435,8 +435,17 @@ x = e^{\frac{y-b}{a}}
 \]
 
 If we wish to obtain a ratio of 0.8 of our profile, then we need $e^{\frac{0.8 - 0.2404}{0.1097}} = 164$ iterations. Our measurement shows that the 0.8 ratio threshold is reached after 151 iterations.
+
 %=====
-%\subsection{Analysis}
+\subsection{How confident are we?} \seclabel{rSquared}
+
+%http://en.wikipedia.org/wiki/Coefficient_of_determination
+
+The previous section gives a model that binds the amount of code iterations with the ratio of reported methods during a profile. We use our model to ``predict'' the value of the ratio for a given amount of iterations.
+
+One piece in our analyze is however missing, which is about the trust we can give in our prediction. In statistics, the coefficient of determination $R^2$ tells about the amount of variability in a data set. More variable a data set is, higher $R^2$ is.
+
+
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{VisualWorks and Pharo}\seclabel{comparison}
@@ -452,7 +461,9 @@ The executing environment and profiler of VisualWork (VW) differ from the one of
 
 \fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
 
-\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkStream. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkStream. We profiled the two industrial applications on a Window XP machine and the two open-source applications on a Linux Ubuntu. 
+
+These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile. 
 
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
