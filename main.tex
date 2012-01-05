@@ -461,7 +461,7 @@ The executing environment and profiler of VisualWork (VW) differ from the one of
 
 \fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
 
-\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and \chg{OSkStream}{OSkSubStream}. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkSubStream. We profiled the two industrial applications on a Window XP machine and the two open-source applications on a Linux Ubuntu. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
 
 These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile. 
 
@@ -486,9 +486,9 @@ Several techniques have been proposed to increase the accuracy and reduce the ov
 
 %Variable sampling period time~\cite{Mytk10a}
 
-Mytkowicz, Diwan, Hauswirth, Sweeney evaluate 4 of profilers for Java, exposing that they do not match in their evaluation to identify the hot methods, candidates to optimize. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems ~\cite{Mytk10a}. 
+Mytkowicz\chg{, Diwan, Hauswirth, Sweeney}{\etal} evaluate 4 \del{of} profilers for Java\chg{, exposing}{. They found} that they do not match in their evaluation to identify the hot methods, candidates to optimize. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems~\cite{Mytk10a}. 
 
-Fischmeister and Ba ~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
+Fischmeister and Ba~\cite{Fischmeister:2010:SPE:1755888.1755908} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
 
 Our approach, however, we can see that even if we use random sampling or a determinated sampling period, the ratio between reported methods and executed methods is inaccurate.
 
@@ -497,14 +497,14 @@ Our approach, however, we can see that even if we use random sampling or a deter
 %strategy using markeds showed how to increase the sampling period by using multiple markers. However, this method had limitation in that overusing markers did not pay off as much as we expected in the long run.
 %A marker can be a system element such as the program counter, very useful, because a vertex in the control-flow graph is a basic block in the source code. Besides, a marker can also be a newly introduced variable solely used for the purpose of monitoring the software.
 
-Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}. 
+Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate~\cite{Whaley:2000:PSP:337449.337483}. 
 
 %\vp{Whaley present a sampling-based profiler for Java Virtual Machines. It is able to correctly identify calling context without walking the entire stack and distinguish between frequently-executed and long running methods. Also, the profile data is extremely accurate.\cite{Whaley:2000:PSP:337449.337483}. }
 
 
 %It is not only efficient enough to be used continuously in a production environment (2-4\% slowdown for most applications) but is also surprisingly accurate in the data that it collects (typically >= 90\% accurate).
 
-Binder present his sampling-based profiling framework for Java ~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on byte-code instruction counting and it offers a good trade-off between high accuracy of profiles and reasonable overhead. The features of Binder profiler can improve our overall impact. In this sense the ratio between profiled methods and executed methods could be more deterministic.
+Binder present his sampling-based profiling framework for Java~\cite{Binder:2006:PAS:1133013.1133016} to implement custom profiling agents in pure Java. It is a sampling based on byte-code instruction counting and it offers a good trade-off between high accuracy of profiles and reasonable overhead. The features of Binder profiler can improve our overall impact. In this sense the ratio between profiled methods and executed methods could be more deterministic.
 
 
 %The key problem in sampling-based execution monitoring is to increase the sampling period. Notorious cases, such as programs with short conditional branches, will result in a low sampling period, if the resolution needs to be given at the granularity of basic blocks. ~\cite{Thomas:2011:LOS:1967677.1967692}
@@ -515,7 +515,7 @@ Binder present his sampling-based profiling framework for Java ~\cite{Binder:200
 
 %Instrumentation-based profilers insert instrumentation code into the target program to collect runtime information. \chg{It}{The major disadvantage of instrumenting the profiled code is that it} introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) 
 
-Arnold and Ryder ~\cite{Arno01a} present a framework to perform instrumentation sampling. Their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented code. This reduce the overhead but need to do an expensive instrumentation first.
+Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation sampling. Their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented code. This reduce the overhead but need to do an expensive instrumentation first.
 
 %\vp{Arnold and Ryder~\cite{Arno01a}. present a framework to perform instrumentation sampling. Their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented (original) code. This reduce the overhead but needs to do an expensive instrumentation first.}
 
@@ -527,7 +527,7 @@ Arnold and Ryder ~\cite{Arno01a} present a framework to perform instrumentation 
 
 %However, we propose in order to improve profiler accuracy in our case the execution scenario is run many times, but this has a big impact on the overall execution overhead. Then this approach is not useful for real time systems for example.
 
-In order to improve profiler accuracy, we propose to execute the scenario a larger number of times, allowing the profiler to catch more methods. However this has a big impact on the profiler overall execution overhead. For this, our approach is not useful for real time systems, for example.
+In order to improve profiler accuracy, we propose to execute the scenario a larger number of times, allowing the profiler to catch more methods. However this has a big impact on the profiler overall execution overhead. For this, our approach \chg{is not useful for}{does not apply to} real time systems, for example.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Conclusion \& Future Work}\seclabel{conclusion}
