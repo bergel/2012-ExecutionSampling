@@ -198,7 +198,7 @@ This inaccuracy may give a false sense of CPU time distribution and prevents pro
 
 %	What's the surprising idea?
 Multiplying the execution of the code to be profiled increases the profiler accuracy.
-We shows that the relation between the number of iterations and the precision of the profiler follows a logarithm curve. 
+We show that the relation between the number of iterations and the precision of the profile\del{r} \chg{follows a logarithm curve}{}. 
 %	What's the consequence?
 We propose a statistical model to determine the right amount of iterations to reach a particular ration of reported methods. We use this model to estimate and increase the profiling accuracy.
 \end{abstract}
@@ -210,7 +210,7 @@ Precisely determining what is happening during the execution of a program is dif
 
 Precisely determining the CPU consumption time share for each method involved in a computation is challenging. Inspecting the execution of a program has an impact on the execution itself. Execution sampling is a technique commonly employed when profiling code execution. It is relatively accurate and it keeps the impact on the executed program relatively low. As a consequence execution sampling is used in the large majority of code execution profilers.
 
-Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. This is a well known problem that software engineers address by executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profile. 
+Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. \chg{This is a well known problem that software engineers address by}{Software engineers address this well known problem by} executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profile. 
 
 The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
 
@@ -241,11 +241,11 @@ We then review the related work (\secref{relatedwork}) before concluding (\secre
 \subsection{Profiling example}
 
 
-Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided xml content. Evaluating this expression with an arbitrary XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. 
+Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided XML content. Evaluating this expression with an arbitrary XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. 
 
 %Time millisecondsToRun: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ].
 
-We profiled the xml parsing using MessageTally, the standard profiler in Pharo, as follows:
+We profiled the XML parsing using MessageTally, the standard profiler in Pharo, as follows:
 
 \begin{lstlisting}
 MessageTally spyOn: [ XMLDOMParser parse: xmlString ]
@@ -264,7 +264,7 @@ MessageTally reports for the absolute and relative time spent in each method. Co
 
 The method \ct{nextTag} is reported to call two other methods, \ct{handleStartTag:attributes:namespaces} and \ct{nextEndTag}. The source code \ct{nextTag} is quite complex, and it sends exactly 15 different messages. However, only two of them are reported by MessageTally.
 
-About 64 different methods are part of the profile (average from 20 runs). A careful tracing of the xml parsing expression reveals that 258 methods are executed in total. This means that only $0.24 = 24\%$ of the methods involved in parsing an xml content are reported by MessageTally. 
+About 64 different methods are part of the profile (average from 20 runs). A careful tracing of the XML parsing expression reveals that 258 methods are executed in total. This means that only $0.24 = 24\%$ of the methods involved in parsing an XML content are reported by MessageTally. 
 
 %(1 to: 20) collect: [ :i | 
 %	(MessageTally
@@ -290,7 +290,7 @@ About 64 different methods are part of the profile (average from 20 runs). A car
 
 To verify whether this effect is particular to our particular expression or not, we run a similar experiment on 7 other applications.
 We took 7 popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the method (using Compteur~\cite{Berg11d}).
-By instrumenting the method, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the xml parsing) is 0.35. 
+By instrumenting the method, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the XML parsing) is 0.35. 
 
 Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms), meaning that less methods will be caught by the profiler (we recall by the sampling is done every milliseconds). 
 Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). This implies that more methods will be sampled by the profiler. 
@@ -355,7 +355,7 @@ We have arbitrarily chosen a loop of 10 iterations. For some applications, the i
 %=====
 \subsection{Regression line}
 
-To get a better understanding of the impact of multiple executions, the following expression successively profiles the xml parser:
+To get a better understanding of the impact of multiple executions, the following expression successively profiles the XML parser:
 
 \begin{lstlisting}
 #(1 11 21 31 41 51 ... 241) do: [ :numberOfIterations |
@@ -364,7 +364,7 @@ To get a better understanding of the impact of multiple executions, the followin
 			timesRepeat: [ XMLDOMParser parse: xmlString ] ] ]
 \end{lstlisting}
 
-The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially increase the execution time of the expression we are interested in. Naturally, we assume all the executions are the same. The code we gave is a simplified version of how we actually measured the profiles. we make sure that before profiling we properly clean the memory by running the garbage collector multiple times.
+The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially increase the execution time of the expression we are interested in. Naturally, we assume all the executions are the same. The code we gave is a simplified version of how we actually measured the profiles. We make sure that before profiling we properly clean the memory by running the garbage collector multiple times.
 
 %#(1 11 21 31 41 51 61 71 81 91 101 111 121 131 141 151 161 171 181) collect: [:iterations | 
 %		10 timesRepeat: [ Smalltalk garbageCollect ].
@@ -380,9 +380,9 @@ The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially in
 
 \fig{h}{0.5}{IterationEvolution}{Evolution of the ratio against multiple execution.}
 
-\figref{IterationEvolution} shows our measurements. Horizontally is the number of iterations for the xml parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. Vertically is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{iteration, ratio)}.
+\figref{IterationEvolution} shows our measurements.The horizontal axis is the number of iterations for the XML parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. The vertical axis is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{(iteration, ratio)}.
 
-The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our xml parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data. We will give an accurate definition of $R^2$ later on (\secref{rSquared}).
+The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our XML parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data. We will give an accurate definition of $R^2$ later on (\secref{rSquared}).
 
 \fig{h}{0.5}{IterationEvolutionForApplications}{Evolution of the ratio.}
 We repeat the same analysis on our applications (\figref{IterationEvolutionForApplications}). All the regression lines are logarithmic curves, with a $R^2$ over 0.89. 
@@ -394,7 +394,7 @@ We have seen that the regression line follows the pattern $y = a~ln(x) + b$. For
 
 As our measurement show, the value of $a$ and $b$ are proper to the piece of code to be profiled. Since we are interested in predicting the amount of iterations for a given ratio, we need to determine $a$ and $b$. 
 
-First, we need to get rid of the logarithm by writing $X = ln(x)$ and $Y = y$. The equation becomes $Y = a X + b$, which is much simpler to reason about. For a given set of $(X, Y)$ plots, $a$ and $b$ are easily determined using the standard statical books:
+First, we need to get rid of the logarithm by writing $X = ln(x)$ and $Y = y$. The equation becomes $Y = a X + b$, which is much simpler to reason about. \chk {For a given set of (X, Y ) plots, a and b are easily determined using linear least squares fit:}
 
 \[
 b = \frac{SS_{XY}}{SS_{XX}} ~~~~~ a = \overline{Y} - b~\overline{Y}
@@ -411,7 +411,7 @@ We further have $n$ is the number of samples;
 $\overline{X}$ is the average of all the $X$ values;
 $\overline{Y}$ is the average of all the $Y$ values.
 
-Using our example of xml parsing, we already had 
+Using our example of XML parsing, we already had 
 
 \begin{center}
 \begin{tabular}{|c|c|}
@@ -428,7 +428,7 @@ iterations ($x$) & ratio ($y$) \\\hline
 The values of $X = ln(x)$ are therefore \textit{\{ln(31), ln(61), ln(91), ln(121)\}}.
 By applying the formulas given above, we find $a = 0.1097$ and $b = 0.2404$. 
 
-The regression equation for the xml parsing is therefore $y = 0.1097~ln(x) + 0.2404$. This equation is pretty close to what we have found in the previous section.
+The regression equation for the XML parsing is therefore $y = 0.1097~ln(x) + 0.2404$. This equation is pretty close to what we have found in the previous section.
 
 We can then deduce:
 \[
@@ -491,11 +491,11 @@ Extracting accurate profiles from a software execution is challenging. Several t
 
 %Variable sampling period time~\cite{Mytk10a}
 
-Mytkowicz \etal evaluate and compare 4 profilers for Java. They discovered that the produced profile are different: the hot methods identified by a profiler may not be the same than with another profiler. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems~\cite{Mytk10a}. 
+Mytkowicz \etal evaluate and compare 4 profilers for Java. They discovered that the produced profiles are different: the hot methods identified by one profiler may not be the same as the ones identified by another profiler. They then propose a more accurate profiler that collects samples randomly and it does not suffer from the above problems~\cite{Mytk10a}. 
 
 Fischmeister and Ba~\cite{Fisc10a} propose theorems to determine the sampling period in different scenarios, and heuristics to extend the sampling period to reduce the overhead.
 
-Our approach, however, shows that using a fixed or a random sampling period evolve similarly against multiple code execution.
+Our approach, however, shows that using a fixed or a random sampling period produces similar result when using multiple code execution
 
 %\vp{Review this please!} Our approach, however, is different as we do not focus to find the hot methods but for the profiler to identify more methods in the sampling. We can see that even if we do not use random sampling, by increasing the number of iterations on the profiler, we still can obtain a larger ratio between reported methods and executed methods.
 
@@ -520,7 +520,7 @@ Binder present a sampling-based profiling framework for Java~\cite{Bind06a} base
 
 %Instrumentation-based profilers insert instrumentation code into the target program to collect runtime information. \chg{It}{The major disadvantage of instrumenting the profiled code is that it} introduces considerable overhead to the execution of the program. Researchers have proposed several methods to reduce the cost of instrumentation overhead:  (i) 
 
-Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation sampling. Their framework duplicate method bodies, and counter-based sampling to switch between instrumented (copy) and no-instrumented code. This reduce the overhead but a relatively expensive has to be done first.
+Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation sampling. Their framework duplicate method bodies, and counter-based sampling to switch between instrumented (copy) and no-instrumented code. This reduce the overhead but a relatively expensive process has to be done first.
 
 %\vp{Arnold and Ryder~\cite{Arno01a}. present a framework to perform instrumentation sampling. Their framework perform a code duplication, and counter-based sampling to switch between instrumented (copy) and no-instrumented (original) code. This reduce the overhead but needs to do an expensive instrumentation first.}
 

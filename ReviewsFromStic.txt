@@ -1,0 +1,337 @@
+Dear Alexandre,
+
+I'm pleased to tell your that your submission to Smalltalk Directions
+2012
+
+The Hidden Face of Execution Sampling
+
+has been accepted for presentation at the Symposium.  Your reviews are
+below; we hope that you will be
+able to respond to these reviews by improving your paper before the
+final
+submission.
+
+Please upload the final version of your paper by 29th February.
+Formatting instructions will follow soon.
+
+Andrew Black
+
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 2
+TITLE: The Hidden Face of Execution Sampling
+AUTHORS: Alexandre Bergel, Vanessa Pena and Juan Pablo Sandoval Alcocer
+
+Summary:
+The authors analize how repeated execution affects the profile results
+of
+a sampling profiler.
+
+Points against:
+- I highly doubt that your math is correct. My statistic lectures were a
+long time ago, but I guess that you observe a poisson distribution (or
+another similar discrete distribution). Your logarithmic function cannot
+be correct, because for x -- inf you get y -- inf, but it should be
+y
+-- 1 (for obvious reasons it cannot and should not grow 1).
+- The result is not surprising: I could have guessed that the longer I
+take samples the more accurate the results get. But as the path ...
+
+Points in favour:
+- ... to answer questions like "How precise is my sampling?" and "How
+long
+do I need to sample to get a 90% confidality?" this work is interesting.
+- Improving the profiling infrastructure and its accuracy and confidence
+is an important research topic.
+
+Remarks:
+- Abstract:
+	- "precision of the profiler": i guess you mean the "profile" (report), not the "profiler" (tool)
+	- Not sure what "follows a logarithm curve" tells me?
+- 1. Introduction:
+	- "Code execution profilers are particlarly useful at estimating where
+the CPU (or the virtual machine) is spending time on." There are
+profilers for CPUs and VMs, but none of the examples use a CPU or
+C-level
+profiler. You should replace this with something along "... how much
+time
+is spent in what methods or objects".
+	- "It is relatively accurate ..." One sentence before you said it
+affects
+the execution itself, seems to be kind of a contradiction.
+	- Paragraph 2: The drawbacks described here are rather Smalltalk
+specific. You should mention that, because in most other programming
+languages the profiler can run on a different CPU so it has no impact on
+the actual execution.
+	- Not sure what "follows a logarithmic curve" tells me?
+- 2. Code execution sampling
+	- "with an arbitrary XML" The string is certainly not arbitrary. I bet
+you get a completely different timing if you take a different XML
+string.
+	- "xml" - "XML" (throughout the paper)
+	- Figure 1, 2, 3, 4: Please fix the y-axis from 0.0 to 1.0.
+	- Figure 1, 2: Maybe add a line showing the average?
+	- What methods did you count? Test, Package, System?
+	- I don't recall: "we recall by the sampling is done every
+milliseconds"
+You say that only later in "2.2 Execution sampling".
+- 3. Measuring the gain
+	- "we make ..." - "We make ..."
+	- 3.2 I would remove this section, I can read how I do a regression fit
+in any statistics book. What would be more interesting is to demonstrate
+why you get a logarithmic curve. That should be figured out from
+mathematics, not by guessing.
+- 4. VisualWorks and Pharo
+	- If you'd use and old VM and a Cog VM on Pharo I would trust the
+results
+more, because you could compare the same code and would use the same
+profiler.
+
+I am signing this review as a matter of principle.
+Lukas Renggli, renggli@gmail.com
+
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 2
+TITLE: The Hidden Face of Execution Sampling
+AUTHORS: Alexandre Bergel, Vanessa Pena and Juan Pablo Sandoval Alcocer
+
+This paper deals with code profiling in Smalltalk. It presents a
+statistical method to compute the satisfying number of iterations to
+perform to profile a particular execution.
+
+Points in favour:
+* Good workshop paper, simple to read, the basic idea is well presented
+and developed.
+* Code profiling is challenging,
+* Experiments are done and clearly presented.
+* A method to understand and achieve better profiling is presented and
+the results can be useful to improve code profiling.
+
+Points against:
+* The context in which the results are really meaningful is not well
+presented:
+interpreted language (Smalltalk), which kind of application (non
+real-time
+application)... ?
+As an example, in 2.1: "7% for a time profile is a compromise acceptable
+in our situation (i.e. non realtime operation..."
+and in 2.2 again: This is reasonable in the large majority of case
+developed in Pharo (i.e. non-realtime applications ..."
+are two repetitive sentences and these points should be presented
+earlier.
+
+* Some parts/terms are imprecise and vague (especially in the
+introduction),
+authors should give more references to further enforce their positions
+"relatively accurate"
+"relatively low"
+"in the large majority"
+"relatively well on long..."
+"fairly inaccurate"
+"for short program execution"
+In 2.2
+"in the large majority of cases"
+In 3.1
+"common statistical tool" and "standard statical books" (simply give one
+or two references)
+
+* "... execution sampling has no impact on the profiled application" -
+it
+has always an impact, authors should reformulate differently
+
+* It is not explained why the impact of 10 iterations is stronger for
+certain applications (as an example for the Regex application)
+
+* Regarding the evaluation, the reasoning is only based on the number of
+iterations. For an application, only one execution path is observed. It
+would be interesting to enrich the measuring by providing different
+input
+data in order to evaluate different execution paths.
+
+* Some related works are simply given, except for Fischmeister and Ba,
+and
+for Binder, they are not compared to the work presented in this paper.
+
+* The conclusion is too short, especially more should be given
+concerning
+future work with Kai.
+
+Less important points:
+- the title is not clear
+- "VISUALWORKS AND PHARO" section title in inappropriate
+- The 7 applications that are used for the experiments should be
+presented
+in few words.
+-"This is a well known problem that software engineers" - "Software
+engineers address this problem by ..."
+
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 2
+TITLE: The Hidden Face of Execution Sampling
+AUTHORS: Alexandre Bergel, Vanessa Pena and Juan Pablo Sandoval Alcocer
+
+The paper addresses the problem of profiling code when the code does not
+run long enough to get accurate measurements. The paper comes up with a
+formula one can use to compute the  number of times one has to repeat
+the
+code while profiling. Various comments on the paper are given below.
+-
+In section 3.2 there seems to be some typos related to the equations. In
+the third paragraph of section 3.2 there is the equation Y = aX + b.
+They
+wish to do a linear least square fit give data points to find a and b.
+They say b = SSXY/SSXX and a = Y' - bY' (Y' is used here rather than Y
+with a vertical bar over it as this is ascii only). However if you look
+at
+http://mathworld.wolfram.com/CorrelationCoefficient.html for example you
+see that if Y = a + bX (line 16) then b = SSXY/SSXX (lines 17 - 18 in
+the
+wolfram reference). Notice that the role of a and b are switched in the
+equations but the value of b is the same.
+(http://www.efunda.com/math/leastsquares/lstsqr1dcurve.cfm provides the
+same result as the wolfram reference)
+
+Once we have b we can solve for using Y' = a + bX' (again Y' means
+average
+of all the Y values, X' means the average of all the X values).
+Subtracting bX' from both sides we get: a = Y' - bX'
+
+So either they want Y' = a + bX' and b = SSXY/SSXX, a = Y' - bX' or they
+want Y' = aX' + b and a = SSXY/SSXX, b = Y' - aX'.  In the end the
+calculations are done correctly. In the second to last paragraph on page
+3
+they have y = 0.1097 ln(x) + 0.2404 which is what I calculate.   (No one
+does the calculations by hand this days so neither the authors or I used
+the formulas directly but used software to compute the results.) The
+authors need to check all uses of the equation y = a ln(x) + b and Y =
+aX
++ b to make sure it is consistent with the calculation given to compute
+b
+and a. I was not able to confirm the formula use for correlation
+coefficient R in section 3.3 as the form I found in references is
+different.
+-
+In section 4 of the paper the authors look profiling code in Visualworks
+Smalltalk to determine if just-in-time compiling and random sampling
+period affect their findings. They use two different machines with
+different OSes, but fail to provide hardware details of the machines and
+do not indicate which application is run on which machine and OS. Figure
+5
+contains the results of timing Visualwork base code. The results for
+OSkStream seem to require more discussion. The value for the correlation
+coefficient R is rather low. The data for that case is rather noisy. Why
+is that? One can speculate that the cause is that the code is too short
+lived to get good measurements. This speculation is based on the number
+of
+times they repeated the code (over 10  time more than the other
+applications).
+-
+The authors are trying to evaluate the "precision of the profiler". They
+actually measure the percent of the methods actually run that the
+profiler
+lists. There is an implicit assumption that the higher percentage of
+methods found by the profiler that the time the profiler reports spent
+in
+each method is also more accurate. While this maybe a good assumption
+perhaps it should be explicitly stated.
+-
+The paper indicates the hardware used in the profiling of one of the
+Pharo
+applications. It does not specify if that is the same machine used in
+the
+profiling of all of the Pharo machines. Also the version of Pharo and
+Visualworks used is not provided, which is needed if one wishes to
+reproduce the results.
+-
+There are two things the authors could work on to improve the work. They
+have provided some empirical data (running experiments on 8
+applications)
+showing that "the relation between the number of iterations and the
+precision of the profiler follows a logarithm curve". The work would be
+strengthen if they could identify some reason for this relationship.
+Secondly unless the calculations are built into some tool software
+developers are not going to perform the calculations to determine how
+many
+times they should repeat the code to get good profiling results. Using
+the
+relationship they found is there some heuristic that can be formulated
+for
+developers to follow?
+
+
+---->(THIS BELOW ARE DONE!!)
+-
+There are a number places where the English can be improved.
+
+page 3 paragraph 2: They have "Horizontally is the number of iterations
+for the xml parsing expression." Perhaps "The horizontal axis is the
+number of iterations for the xml parsing expression." is better.
+Similarly
+with Vertically in the same paragraph.
+
+page 3 paragraph 2, last line. They have "Each cross corresponds to a
+measurement iteration, ratio)." The line is missing a "(".
+
+page 3 column 2 first paragraph: They have "For a given set of (X, Y )
+plots, a and b are easily determined using the standard statical books:"
+Better to give the method a name as "For a given set of (X, Y ) plots, a
+and b are easily determined linear least squares fit:"
+
+page 4 column 2 paragraph 1. "They discovered that the produced profile
+are different:" should be "They discovered that the produced profiles
+are
+different:" (missing s on profile).
+
+page 4 column 2 paragraph 1. "the hot methods identified by a profiler
+may
+not be the same than with another profiler." might be better as "the hot
+methods identified by one profiler may not be the same as identified by
+another profiler."
+
+page 4 column 2 paragraph 3. "Our approach, however, shows that using a
+fixed or a random sampling period evolve similarly against multiple code
+execution." Perhaps would be better as "Our approach, however, shows
+that
+using a fixed or a random sampling period produces similar result when
+using multiple code execution."
+
+page 4 column 2 last sentence of section 5 "This reduce the overhead but
+a
+relatively expensive has to be done first." perhaps would be better as:
+"This reduced the overhead but a relatively expensive process has to be
+done first."
+
+
+----------------------- REVIEW 4 ---------------------
+PAPER: 2
+TITLE: The Hidden Face of Execution Sampling
+AUTHORS: Alexandre Bergel, Vanessa Pena and Juan Pablo Sandoval Alcocer
+
+This paper provides a very interesting study on code profilers and how
+they differ in their accuracy. The problem is thoroughly studied and the
+statistical analysis seems correct and provides a very interesting
+outcome
+in respect to the comparison of the profilers.
+
+However, I recommend only a weak accept because the purpose of the study
+is not well discussed. Why is such an accuracy required, especially for
+short program execution? What is the goal behind the study? One could
+argue that a profiler is required to identify part of an execution that
+takes proportionally longer compared to other parts, meaning it is not
+necessary to find out the execution time of all messages.
+Please explain the size of the applications studied in Section 4.
+
+Comments in detail:
+Abstract:
+- I would not say that "execution sampling is fairly inaccurate" in
+general but there are methods which are more accurate than others as
+shown
+in the study.
+- "We show", not "We shows"
+
+
+
+
+
