@@ -51,13 +51,13 @@
 	<array>
 		<dict>
 			<key>Bounds</key>
-			<string>{{20, 52}, {490, 229}}</string>
+			<string>{{30, 49}, {484, 229}}</string>
 			<key>Class</key>
 			<string>ShapedGraphic</string>
 			<key>ID</key>
-			<integer>4</integer>
+			<integer>7</integer>
 			<key>ImageID</key>
-			<integer>2</integer>
+			<integer>5</integer>
 			<key>Shape</key>
 			<string>Rectangle</string>
 			<key>Style</key>
@@ -89,14 +89,14 @@
 	<key>HPages</key>
 	<integer>1</integer>
 	<key>ImageCounter</key>
-	<integer>3</integer>
+	<integer>6</integer>
 	<key>ImageLinkBack</key>
 	<array>
 		<dict/>
 	</array>
 	<key>ImageList</key>
 	<array>
-		<string>image2.pdf</string>
+		<string>image5.pdf</string>
 	</array>
 	<key>KeepToScale</key>
 	<false/>
@@ -135,7 +135,7 @@
 	<key>MasterSheets</key>
 	<array/>
 	<key>ModificationDate</key>
-	<string>2011-12-26 01:00:55 +0000</string>
+	<string>2012-02-29 12:36:56 +0000</string>
 	<key>Modifier</key>
 	<string>Alexandre Bergel</string>
 	<key>NotesVisible</key>
@@ -230,7 +230,7 @@
 		<key>SidebarWidth</key>
 		<integer>120</integer>
 		<key>VisibleRegion</key>
-		<string>{{0, 0}, {575, 623}}</string>
+		<string>{{0, 6}, {575, 623}}</string>
 		<key>Zoom</key>
 		<real>1</real>
 		<key>ZoomValues</key>

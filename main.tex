@@ -106,7 +106,7 @@
 \newcommand{\ins}[1]{\textcolor{blue}{\uline{#1}}} % please insert
 \newcommand{\del}[1]{\textcolor{red}{\sout{#1}}} % please delete
 \newcommand{\chg}[2]{\textcolor{red}{\sout{#1}}{\ra}\textcolor{blue}{\uline{#2}}} % please change
-\newcommand{\chk}[1]{\textcolor{ForestGreen}{#1}} % changed, please check
+\newcommand{\chk}[1]{\textcolor{green}{#1}} % changed, please check
 
 % comments \nb{label}{color}{text}
 \newboolean{showcomments}
@@ -198,7 +198,7 @@ This inaccuracy may give a false sense of CPU time distribution and prevents pro
 
 %	What's the surprising idea?
 Multiplying the execution of the code to be profiled increases the profiler accuracy.
-We show that the relation between the number of iterations and the precision of the profile\del{r} \chg{follows a logarithm curve}{}. 
+We show that the relation between the number of iterations and the precision of the profiles follows a well determined relation.
 %	What's the consequence?
 We propose a statistical model to determine the right amount of iterations to reach a particular ration of reported methods. We use this model to estimate and increase the profiling accuracy.
 \end{abstract}
@@ -206,11 +206,11 @@ We propose a statistical model to determine the right amount of iterations to re
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Introduction}\seclabel{introduction}
 
-Precisely determining what is happening during the execution of a program is difficult. Modern programming environments provide code execution profilers to report on the execution behavior. Code execution profilers are particularly useful at estimating where the CPU (or the virtual machine) is spending time on. 
+Precisely determining what is happening during the execution of a program is difficult. Modern programming environments provide code execution profilers to report on the execution behavior. Code execution profilers for object oriented programming languages are particularly useful at estimating how much time is spent in what methods.
 
-Precisely determining the CPU consumption time share for each method involved in a computation is challenging. Inspecting the execution of a program has an impact on the execution itself. Execution sampling is a technique commonly employed when profiling code execution. It is relatively accurate and it keeps the impact on the executed program relatively low. As a consequence execution sampling is used in the large majority of code execution profilers.
+Execution sampling is a technique commonly employed when profiling code execution. It has a low impact on the executed program and is reasonably efficient to identify execution bottleneck, despite its limitations~\cite{Berg11d,Jovi11a,Mytk10a}. As a consequence execution sampling is commonly employed in code execution profilers.
 
-Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. \chg{This is a well known problem that software engineers address by}{Software engineers address this well known problem by} executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profile. 
+Execution sampling behaves relatively well on long and focused program execution, however, it is fairly inaccurate for short program execution. Software engineers address this well known problem by executing the same code multiple times~\cite{Wils00a}. This artificial increase of the execution time produces a gain in the profiling accuracy. What is however unclear, is the amount of necessary iterations to reach a satisfactory profile. 
 
 The research question addressed in this paper is: \emph{Can the number of multiple executions be related to the accuracy of the execution sampling?}
 
@@ -241,7 +241,9 @@ We then review the related work (\secref{relatedwork}) before concluding (\secre
 \subsection{Profiling example}
 
 
-Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided XML content. Evaluating this expression with an arbitrary XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. 
+Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided XML content. 
+We arbitrarily pick an XML string as the benchmark we thoroughly use in this paper. 
+Evaluating this expression for our particular XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. %The content of the XML content is not relevant for our point.
 
 %Time millisecondsToRun: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ].
 
@@ -264,20 +266,15 @@ MessageTally reports for the absolute and relative time spent in each method. Co
 
 The method \ct{nextTag} is reported to call two other methods, \ct{handleStartTag:attributes:namespaces} and \ct{nextEndTag}. The source code \ct{nextTag} is quite complex, and it sends exactly 15 different messages. However, only two of them are reported by MessageTally.
 
-About 64 different methods are part of the profile (average from 20 runs). A careful tracing of the XML parsing expression reveals that 258 methods are executed in total. This means that only $0.24 = 24\%$ of the methods involved in parsing an XML content are reported by MessageTally. 
+About 21 different methods defined in the XML package are part of the profile (average from 20 runs). A careful tracing of the XML parsing expression reveals that 258 methods contained in the XML package are executed in total. This means that only $21 / 258 = 0.08 = 8\%$ of the methods involved in parsing an XML content are reported by MessageTally. 
 
-%(1 to: 20) collect: [ :i | 
-%	(MessageTally
-%			spyOn: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ] 
-%			reportOtherProcesses: false
-%			cutoff: 1 
-%			openResultWindow: false 
-%			closeAfter: false) allMethodNames size ] .
+%(1 to: 20) collect: [ :i | %	((MessageTally%			spyOn: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ] %			reportOtherProcesses: false%			cutoff: 1 %			openResultWindow: false %			closeAfter: false) allMethodNamesScopedTo: 'XML*') size  ] .
+
 		
 %((Compteur profile: [
 %XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents] inPackagesMatching: 'XML*') allMethods select: #isCovered) size
 
-\fig{h}{0.5}{Ratio}{Ratio between reported methods and executed methods (higher is better).}
+\fig{h}{0.5}{Ratio}{Ratio between reported methods and executed methods (higher is better, average = 0.32).}
 %	Ratio 	TimeToRun
 %XML	0.41
 %ECompletion	0.43	 
@@ -289,11 +286,14 @@ About 64 different methods are part of the profile (average from 20 runs). A car
 %ProfStef	0.28
 
 To verify whether this effect is particular to our particular expression or not, we run a similar experiment on 7 other applications.
-We took 7 popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the method (using Compteur~\cite{Berg11d}).
-By instrumenting the method, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the XML parsing) is 0.35. 
+We took 7 popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the methods (using Compteur~\cite{Berg11d}).
 
-Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms), meaning that less methods will be caught by the profiler (we recall by the sampling is done every milliseconds). 
-Shout has the highest ratio (0.82). Shout has the longest execution time (6964 ms). This implies that more methods will be sampled by the profiler. 
+Using unit tests as benchmarks is reasonable in our case since unit tests are not interactive.It has been shown that traditional profilers, including MessageTally, are inefficient to profile interaction scenarios~\cite{Jovi11a}.
+
+By instrumenting the methods, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the XML parsing) is 0.32. 
+
+Merlin has the lowest ratio: only 1\% of the executed methods are reported by MessageTally. The reason is probably the extremely short execution of the unit tests (4 ms), meaning that less methods will be caught by the profiler (the sampling in Pharo is done every milliseconds). 
+Shout has the highest ratio (82\%), but also the longest execution time (6964 ms). This implies that more methods will be sampled by the profiler. 
 
 The fact that some methods are missed by MessageTally is a direct consequence to execution sampling, the strategy used by most of the code execution profilers.
 
@@ -303,8 +303,8 @@ The fact that some methods are missed by MessageTally is a direct consequence to
 Execution sampling approximates the time spent in an application's methods by periodically stopping a program and recording the collection of methods being executed~\cite{Whal00a}. In VisualWorks and Pharo, the code to profile is executed in a new thread and the profiler runs in a thread at a higher priority~\cite{Berg11d}. 
 When the profiling thread is activated, it inspects the runtime method call stack (accessible via the \ct{thisContext} pseudo variable) of the observed thread. Per default, this inspection happens every millisecond\footnote{In Java systems, the profiling time sampling is usually 10 milliseconds~\cite{Mytk10a}.}. 
 
-Execution sampling has many advantages. Firstly, it has a low impact on the overall execution. In Pharo, code is between 5\% and 12\% longer to execute when being profiled. This is reasonable in the large majority of case developed in Pharo (\ie non-realtime application with little dependencies on the operating system). 
-Secondly, execution sampling has no impact on the profiled application semantics in the large majority of cases. %The application is expected to have the same behavior if profiled in the majority of cases. An application that intensively use the language reflective facilities may be perturbed by the regular sampling exercised with the thread launched by the profiler. However, this is hardly the case in practice. 
+Execution sampling has many advantages. Firstly, it has a low impact on the overall execution. In Pharo, code is between 5\% and 12\% longer to execute when being profiled. This is reasonable in the large majority of cases developed in Pharo since we are considering non-realtime applications and with little dependencies on the operating system. 
+Secondly, execution sampling has no perceptible impact on the profiled application semantics in the large majority of cases. %The application is expected to have the same behavior if profiled in the majority of cases. An application that intensively use the language reflective facilities may be perturbed by the regular sampling exercised with the thread launched by the profiler. However, this is hardly the case in practice. 
 %Thirdly, almost no configuration is required for the profiling to be carried out. Contrary to instrumentation-based profiling, no scope for the instrumentation has to be defined.
 
 %In contrast to its numerous advantages, execution sampling remains particularly shy on the analyze one can carry out with it. 
@@ -332,22 +332,29 @@ The consumption of \ct{nextTag} is now reported as:
   2.0% {33ms} XMLTokenizer>>nextAttributeInto:namespaces:
 \end{lstlisting}
 
-The call to \ct{nextAttributeInto:namespaces:} is now revealed. By repeatedly executing the same expression, the total execution time increases, enabling more methods to be detected during a sampling. 132 methods are now reported by MessageTally. This makes the ratio goes from 0.24 to 0.51.
+The call to \ct{nextAttributeInto:namespaces:} is now revealed. By repeatedly executing the same expression, the total execution time increases, enabling more methods to be detected during a sampling. 62 methods are now reported by MessageTally. This makes the ratio goes from 8\% to 24\%.
 
 %(1 to: 5) collect: [ :i | 
-%	(MessageTally
+%	((MessageTally
 %			spyOn: [  10 timesRepeat: [XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents] ] 
 %			reportOtherProcesses: false
 %			cutoff: 1 
 %			openResultWindow: false 
-%			closeAfter: false) allMethodNames size ] .
+%			closeAfter: false) allMethodNamesScopedTo: 'XML*') size ] .
 
 
-\fig{h}{0.5}{RatioAfter10Loops}{Ratio of reported methods with a loop of 10 iterations (higher is better).}
+\fig{h}{0.5}{RatioAfter10Loops}{Ratio of reported methods with a loop of 10 iterations (higher is better, average = 0.52).}
 
-\figref{RatioAfter10Loops} shows the applications for which we repeated 10 times their corresponding unit tests. The effect of the loop is significant. The average ratio of reported methods is now 0.58. 
+\figref{RatioAfter10Loops} shows the applications for which we repeated 10 times their corresponding unit tests. The effect of the loop is significant. The average ratio of reported methods is now 0.52. 
 
-We have arbitrarily chosen a loop of 10 iterations. For some applications, the impact of using 10 iterations is stronger than for others. For example, sampling 10 executions of the unit tests of Regex reports 66\% of the used methods, whereas it was only 25\% with a single execution. The following section discuss the impact of multiple executions.
+We have arbitrarily chosen a loop of 10 iterations. For some applications, the impact of using 10 iterations is stronger than for others. For example, ProfStef has a ratio greater than XML's, however the ratio is lower with 10 iterations. Iterating has a different impact on each application essentially due from two reasons:
+
+\begin{itemize}
+\item Iterations stress the memory management. The number of full garbage collections is linear with the number of iterations: increasing the number of iterations results in a linear increase of the number of full garbage collections. However, this iteration is quite dispersed around the trend line. This disparity makes that multiply executing the same expression has unpredictable effects on the garbage collector.
+\item Methods with a very short execution time may remain hidden from the profiler, even with a high number of execution.
+\end{itemize}
+
+The following section discuss the impact of multiple executions.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Measuring the gain} \seclabel{measuringTheGain}
@@ -358,7 +365,7 @@ We have arbitrarily chosen a loop of 10 iterations. For some applications, the i
 To get a better understanding of the impact of multiple executions, the following expression successively profiles the XML parser:
 
 \begin{lstlisting}
-#(1 11 21 31 41 51 ... 241) do: [ :numberOfIterations |
+#(1 11 21 31 41 51 ... 191) do: [ :numberOfIterations |
 	MessageTally spyOn: [  
 		numberOfIterations 
 			timesRepeat: [ XMLDOMParser parse: xmlString ] ] ]
@@ -380,12 +387,14 @@ The effect of using \ct{numberOfIterations timesRepeat: [ ... ]} artificially in
 
 \fig{h}{0.5}{IterationEvolution}{Evolution of the ratio against multiple execution.}
 
-\figref{IterationEvolution} shows our measurements.The horizontal axis is the number of iterations for the XML parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. The vertical axis is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{(iteration, ratio)}.
+\figref{IterationEvolution} shows our measurements. The horizontal axis is the number of iterations for the XML parsing expression. The number of times it is executed goes from 1 to 241, with an increment of 10. The vertical axis is the ratio of reported methods. It goes from 0.24 and tops at 0.81. Each cross corresponds to a measurement \textit{(iteration, ratio)}.
 
-The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools has the pattern $y = a~ln(x) + b$. In the case of our XML parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data. We will give an accurate definition of $R^2$ later on (\secref{rSquared}).
+The trendline is indicated with a continuous line and has a logarithmic shape. The regression equation given by common statistical tools~\cite{Free97a} has the pattern $y = a~ln(x) + b$. In the case of our XML parsing, $a = 0.0974$ and $b = 0.2918$. The associated ``test of goodness of fit'', $R^2$, is 0.9514. A value close to 1 means a good fit, \ie the equation matches the observed data. We will give an accurate definition of $R^2$ later on (\secref{rSquared}).
 
 \fig{h}{0.5}{IterationEvolutionForApplications}{Evolution of the ratio.}
 We repeat the same analysis on our applications (\figref{IterationEvolutionForApplications}). All the regression lines are logarithmic curves, with a $R^2$ over 0.89. 
+
+\ab{Talk here about the upper limit, it cannot go above 1}
 
 %=====
 \subsection{Determining $a$ and $b$}
@@ -394,7 +403,7 @@ We have seen that the regression line follows the pattern $y = a~ln(x) + b$. For
 
 As our measurement show, the value of $a$ and $b$ are proper to the piece of code to be profiled. Since we are interested in predicting the amount of iterations for a given ratio, we need to determine $a$ and $b$. 
 
-First, we need to get rid of the logarithm by writing $X = ln(x)$ and $Y = y$. The equation becomes $Y = a X + b$, which is much simpler to reason about. \chk {For a given set of (X, Y ) plots, a and b are easily determined using linear least squares fit:}
+First, we need to get rid of the logarithm by writing $X = ln(x)$ and $Y = y$. The equation becomes $Y = a X + b$, which is much simpler to reason about. For a given set of (X, Y ) plots, a and b are easily determined using linear least squares fit:
 
 \[
 b = \frac{SS_{XY}}{SS_{XX}} ~~~~~ a = \overline{Y} - b~\overline{Y}
@@ -455,7 +464,7 @@ where  $SS_{err}  =  \sum (y_i - f(x_i))^2$ and $SS_{tot}  =  \sum (y_i - \overl
 When applied to the four $(x, y)$ pair given previously, we have $R^2 = 0.84$. Being close to 1 indicates that the regression given previously is indeed an accurate model of the pair values.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
-\section{VisualWorks and Pharo}\seclabel{comparison}
+\section{The Case of VisualWorks}\seclabel{comparison}
 
 The measurement given above have been realized in Pharo Smalltalk with a non-jitted virtual machine. To verify whether the model we have previously described is particular to Pharo or not, we take VisualWorks Smalltalk\footnote{\url{http://www.cincomsmalltalk.com}}, a popular Smalltalk dialect, and run a similar set of experiences.
 
@@ -539,8 +548,7 @@ Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation s
 
 The difficulty to properly monitor an application execution imposes a severe compromise between what information can be extracted and the cost to obtain it. In this paper we have motivated and measured a simple way to increase the accuracy of profiles based on execution sampling.
 
-As future work, we plan to integrate our model into Kai~\cite{Berg11f}, a fully fledged code execution profiler.
-
+Most code execution profilers simply report what has been detected, without giving any feedback about the quality of the profile.  As future work, we plan to integrate our model into Kai~\cite{Berg11f}, a fully fledged code execution profiler. This will make Kai the very first profiler to provide feedback on the profile quality.
 
 \paragraph{Acknowledgments} 
 We gratefully thank Chris Thorgrimsson for the multiple discussions and brainstormings we had. We thanks Johan Fabry and Romain Robbes for the discussion we had on the statistical part.
