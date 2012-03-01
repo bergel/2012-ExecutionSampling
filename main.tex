@@ -200,7 +200,7 @@ This inaccuracy may give a false sense of CPU time distribution and prevents pro
 Multiplying the execution of the code to be profiled increases the profiler accuracy.
 We show that the relation between the number of iterations and the precision of the profiles follows a well determined relation.
 %	What's the consequence?
-We propose a statistical model to determine the right amount of iterations to reach a particular ration of reported methods. We use this model to estimate and increase the profiling accuracy.
+We propose a statistical model to determine the right amount of iterations to reach a particular ratio of reported methods. We use this model to estimate and increase the profiling accuracy.
 \end{abstract}
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
@@ -240,10 +240,9 @@ We then review the related work (\secref{relatedwork}) before concluding (\secre
 %=====
 \subsection{Profiling example}
 
-
 Consider the Smalltalk expression \ct{XMLDOMParser parse: xmlString.} Evaluating this expression returns an abstract syntax tree describing the provided XML content. 
 We arbitrarily pick an XML string as the benchmark we thoroughly use in this paper. 
-Evaluating this expression for our particular XML content takes 156 ms on our machine\footnote{MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. %The content of the XML content is not relevant for our point.
+Evaluating this expression for our particular XML content takes 156 ms on our machine\footnote{All the measurements with Pharo were realized using Pharo 1.4 with the VM 5.7b3 on a MacBook Pro, 8Gb of Ram, 2.26 GHz Intel Core 2 Duo}. %The content of the XML content is not relevant for our point.
 
 %Time millisecondsToRun: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ].
 
@@ -268,7 +267,13 @@ The method \ct{nextTag} is reported to call two other methods, \ct{handleStartTa
 
 About 21 different methods defined in the XML package are part of the profile (average from 20 runs). A careful tracing of the XML parsing expression reveals that 258 methods contained in the XML package are executed in total. This means that only $21 / 258 = 0.08 = 8\%$ of the methods involved in parsing an XML content are reported by MessageTally. 
 
-%(1 to: 20) collect: [ :i | %	((MessageTally%			spyOn: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ] %			reportOtherProcesses: false%			cutoff: 1 %			openResultWindow: false %			closeAfter: false) allMethodNamesScopedTo: 'XML*') size  ] .
+%(1 to: 20) collect: [ :i | 
+%	((MessageTally
+%			spyOn: [  XMLDOMParser parse: (FileStream fileNamed: '/Users/alexandrebergel/Documents/CaseStudy/ArgoUML-0-28-1/src/argouml-documentation/src/docbook-setup/docbook-xsl/xhtml/callout.xsl') contents ] 
+%			reportOtherProcesses: false
+%			cutoff: 1 
+%			openResultWindow: false 
+%			closeAfter: false) allMethodNamesScopedTo: 'XML*') size  ] .
 
 		
 %((Compteur profile: [
@@ -288,7 +293,7 @@ About 21 different methods defined in the XML package are part of the profile (a
 To verify whether this effect is particular to our particular expression or not, we run a similar experiment on 7 other applications.
 We took 7 popular applications contained in the standard Pharo image. We profiled the execution of the unit tests for each of them twice, the first time using an execution sampling profiler (MessageTally), and the second time by instrumenting the methods (using Compteur~\cite{Berg11d}).
 
-Using unit tests as benchmarks is reasonable in our case since unit tests are not interactive.It has been shown that traditional profilers, including MessageTally, are inefficient to profile interaction scenarios~\cite{Jovi11a}.
+Using unit tests as benchmarks is reasonable in our case since unit tests are not interactive. It has been shown that traditional profilers, including MessageTally, are inefficient to profile interaction scenarios~\cite{Jovi11a}.
 
 By instrumenting the methods, we get an accurate amount of methods involved in the execution. The average of the ratio between reported methods and executed methods for our 8 applications (including the XML parsing) is 0.32. 
 
@@ -303,8 +308,8 @@ The fact that some methods are missed by MessageTally is a direct consequence to
 Execution sampling approximates the time spent in an application's methods by periodically stopping a program and recording the collection of methods being executed~\cite{Whal00a}. In VisualWorks and Pharo, the code to profile is executed in a new thread and the profiler runs in a thread at a higher priority~\cite{Berg11d}. 
 When the profiling thread is activated, it inspects the runtime method call stack (accessible via the \ct{thisContext} pseudo variable) of the observed thread. Per default, this inspection happens every millisecond\footnote{In Java systems, the profiling time sampling is usually 10 milliseconds~\cite{Mytk10a}.}. 
 
-Execution sampling has many advantages. Firstly, it has a low impact on the overall execution. In Pharo, code is between 5\% and 12\% longer to execute when being profiled. This is reasonable in the large majority of cases developed in Pharo since we are considering non-realtime applications and with little dependencies on the operating system. 
-Secondly, execution sampling has no perceptible impact on the profiled application semantics in the large majority of cases. %The application is expected to have the same behavior if profiled in the majority of cases. An application that intensively use the language reflective facilities may be perturbed by the regular sampling exercised with the thread launched by the profiler. However, this is hardly the case in practice. 
+Execution sampling has many advantages. Firstly, it has a low impact on the overall execution. In Pharo, code is between 5\% and 12\% longer to execute when being profiled. This is reasonable in the large majority of cases developed in Pharo. 
+Secondly, execution sampling has no perceptible impact on the profiled application semantics in the large majority of cases: an application that is being profiled is expected to do what it is supposed to do, only a bit slower. %The application is expected to have the same behavior if profiled in the majority of cases. An application that intensively use the language reflective facilities may be perturbed by the regular sampling exercised with the thread launched by the profiler. However, this is hardly the case in practice. 
 %Thirdly, almost no configuration is required for the profiling to be carried out. Contrary to instrumentation-based profiling, no scope for the instrumentation has to be defined.
 
 %In contrast to its numerous advantages, execution sampling remains particularly shy on the analyze one can carry out with it. 
@@ -332,7 +337,9 @@ The consumption of \ct{nextTag} is now reported as:
   2.0% {33ms} XMLTokenizer>>nextAttributeInto:namespaces:
 \end{lstlisting}
 
-The call to \ct{nextAttributeInto:namespaces:} is now revealed. By repeatedly executing the same expression, the total execution time increases, enabling more methods to be detected during a sampling. 62 methods are now reported by MessageTally. This makes the ratio goes from 8\% to 24\%.
+The call to \ct{nextAttributeInto:namespaces:} is now revealed which readjust the overall distribution, leading to a better accuracy. The CPU share of \ct{handle...spaces:} went from 10.1\% to 8.1\% and \ct{nextEndTag} went from 3.6\% to 3.1\%.
+
+By repeatedly executing the same expression, the total execution time increases, enabling (i) more methods to be detected during a sampling and (ii) the CPU share of reported methods is slimed down to gain in accuracy. 62 methods are now reported by MessageTally. This makes the ratio go from 8\% to 24\%.
 
 %(1 to: 5) collect: [ :i | 
 %	((MessageTally
@@ -394,7 +401,9 @@ The trendline is indicated with a continuous line and has a logarithmic shape. T
 \fig{h}{0.5}{IterationEvolutionForApplications}{Evolution of the ratio.}
 We repeat the same analysis on our applications (\figref{IterationEvolutionForApplications}). All the regression lines are logarithmic curves, with a $R^2$ over 0.89. 
 
-\ab{Talk here about the upper limit, it cannot go above 1}
+The ratio of identified methods ranges from 0\% to 100\%. Obviously, it cannot be greater than 1. In practice, getting a ratio of 100\% (\ie determining all the methods that are effectively used by sampling the execution) is hardly achievable. Even for a high number of iterations, the ratio stalls around 90\% when we pick a high number of iteration. As a consequence, the regression model $y = a~ln(x) + b$ is valid for values of $x$ that produces a $y$ lesser than 0.90. 
+
+In the following, we do not discuss any further about this asymptotic behavior as we leave it for future work.
 
 %=====
 \subsection{Determining $a$ and $b$}
@@ -446,6 +455,8 @@ x = e^{\frac{y-b}{a}}
 
 If we wish to obtain a ratio of 0.8 of our profile, then we need $e^{\frac{0.8 - 0.2404}{0.1097}} = 164$ iterations. Our measurement shows that the 0.8 ratio threshold is reached after 151 iterations.
 
+%To obtain a ratio of 100\%, we would need  $e^{\frac{1 - 0.2404}{0.1097}} = 1016$ iterations
+
 %=====
 \subsection{How confident are we?} \seclabel{rSquared}
 
@@ -477,7 +488,13 @@ The executing environment and profiler of VisualWork (VW) differ from the one of
 
 \fig{h}{0.5}{IterationEvolutionOnVW}{Evolution of the ratio on VisualWorks.}
 
-\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkSubStream. We profiled the two industrial applications on a Window XP machine and the two open-source applications on a Linux Ubuntu. These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
+\figref{IterationEvolutionOnVW} the evolution of the ratio for 4 applications. We tried two industrial applications, noted \ct{X} and \ct{Y}, and two open-source applications, Mondrian and OSkSubStream. 
+
+We profiled the two industrial applications on a Window XP machine and the two open-source applications on a Linux Ubuntu\footnote{VisualWorks 7.7.1 on a PC Core i5 2.30GHz, 4Gb of Ram}. 
+
+The  OSkSubStream measurements are weakly correlated. We speculate that the cause is the presence of many short methods. Interestingly, we experienced in our previous work~\cite{Berg11d} a similar significant variation when profiling PetitParser, a streaming and parsing framework in Pharo. 
+
+These four experiences confirm our previous finding: the ratio between profiled methods and executed methods follows a logarithmic curve. Our results strongly suggest that the performance of the virtual machine, the just-in-time compiler and the random sampling do not impact the ratio of reported methods in a sampling-based profile.
 
 %: % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
 \section{Related work}\seclabel{relatedwork}
@@ -547,6 +564,10 @@ Arnold and Ryder~\cite{Arno01a} present a framework to perform instrumentation s
 \section{Conclusion \& Future Work}\seclabel{conclusion}
 
 The difficulty to properly monitor an application execution imposes a severe compromise between what information can be extracted and the cost to obtain it. In this paper we have motivated and measured a simple way to increase the accuracy of profiles based on execution sampling.
+
+So far we have empirically determined a logarithmic relation between the amount of iterations and the ratio of identified methods. As a future work, we will investigate the cause of this relationship by monitoring the evolution of the call graphs.
+
+The regression model that we determine follows a logarithmic curve ($y = a~ln(x) + b$). However, we have found that the produced ratio ($y$) is asymptotic in practice: $y$ does not go above a ratio (around 90\%), even for a large $x$. As future work, we plan to refine our model with this asymptotic behavior for large number of iterations.
 
 Most code execution profilers simply report what has been detected, without giving any feedback about the quality of the profile.  As future work, we plan to integrate our model into Kai~\cite{Berg11f}, a fully fledged code execution profiler. This will make Kai the very first profiler to provide feedback on the profile quality.
 
